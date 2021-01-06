@@ -1,0 +1,55 @@
+//
+//  PrefixHeader.pch
+//  MainTestProgram
+//
+//  Created by zjn on 2020/7/5.
+//  Copyright © 2020 zjn. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+/*公共引用类*/
+#import "UIView+Layout.h"
+#import "Masonry.h"
+
+/*========= 宏定义屏幕宽高以及其他参数ObjC start =========*/
+/// 机型以及系统版本判断
+#define KIsiPad ([[UIDevice currentDevice].model isEqualToString:@"iPad"]?YES:NO)
+#define KIsiPhoneX (([[UIScreen mainScreen] bounds].size.height<812)?NO:YES)
+#define KIsiOS11Available ([UIDevice currentDevice].systemVersion.floatValue >= 11.0)
+/// 屏幕尺寸
+#define KScreenWidth  [UIScreen mainScreen].bounds.size.width
+#define KScreenHeight  [UIScreen mainScreen].bounds.size.height
+#define KStatusHeight (KIsiPhoneX ? 44.f : 20.f)
+#define KNavBarHeight  44
+#define KTabBarHeight  49
+#define KTabBarCtlViewHeight  (KScreenHeight-KStatusHeight-KNavBarHeight-KTabBarHeight)
+#define KNavBarCtlViewHeight  (KScreenHeight-KStatusHeight-KNavBarHeight)
+
+/// 由角度转换弧度
+#define DegreesToRadian(x) (M_PI * (x) / 180.0)
+/// 由弧度转换角度
+#define RadianToDegrees(radian) (radian*180.0)/(M_PI)
+/*========= 宏定义屏幕宽高以及其他参数ObjC end =========*/
+
+/**颜色控制快捷键**/
+#define getRandomColor [UIColor colorWithRed:arc4random_uniform(256)/255.0 green:arc4random_uniform(256)/255.0 blue:arc4random_uniform(256)/255.0 alpha:1]
+#define getColorFrom(r,g,b,a) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
+#define pickColorFrom(a) [UIColor a]
+
+/**打印快捷键**/
+#ifdef DEBUG  //调试状态,打开Log功能
+#define BKLog(fmt, ...) NSLog(@"\n%@\n====================================", [NSString stringWithFormat:fmt, ##__VA_ARGS__])
+#define BKDislog(a)  NSLog(@"\n%@\n====================================",a)
+#define BKDisplayError(a)   NSLog(@"\n错误信息:\n%@\n====================================",a)
+#define BKDisNum(a)   NSLog(@"\n%ld\n====================================",a)
+#define BKDisFloat(a)   NSLog(@"\n%lf\n====================================",a)
+#else  //发布状态,关闭Log功能
+#define BKLog(...)
+#define BKDislog(a)
+#define BKDisplayError(a)
+#define BKDisNum(a)
+#define BKDisFloat(a)
+#endif
+
+#endif /* PrefixHeader_pch */
