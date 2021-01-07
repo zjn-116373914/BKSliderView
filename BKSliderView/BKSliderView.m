@@ -8,12 +8,12 @@
 
 #import "BKSliderView.h"
 @interface BKSliderView ()
-/// 滑动条类型
+/// 滑动条样式类型
 @property(nonatomic, assign) BKSliderType type;
-/// 滑动条的数值
-@property(nonatomic, assign) CGFloat value;
 /// [标题]字符内容
 @property(nonatomic, strong) NSString *title;
+/// [滑动条图标]名称
+@property(nonatomic, strong) NSString *thumbIcon;
 /// [空值]进度条
 @property(nonatomic, strong) UIView *emptyProgressView;
 /// [满值]进度条
@@ -22,20 +22,25 @@
 @property(nonatomic, strong) UIImageView *thumbImgView;
 /// [中间分割线标识]控件
 @property(nonatomic, strong) UIView *centerLineView;
+/// 滑动条的数值
+@property(nonatomic, assign) CGFloat value;
 @end
 @implementation BKSliderView
 /// 初始化对象
-/// @param title 滑动条控件的标题
 /// @param type 滑动条类型
+/// @param title 滑动条控件的标题
+/// @param thumbIcon [滑动条图标]名称
 /// @param minValue 最小值
 /// @param maxValue 最大值
-+ (instancetype)customByTitle:(NSString*)title
-                         type:(BKSliderType)type
-                     minValue:(CGFloat)minValue
-                     maxValue:(CGFloat)maxValue{
++ (instancetype)customByType:(BKSliderType)type
+                       title:(NSString*)title
+                   thumbIcon:(NSString*)thumbIcon
+                    minValue:(CGFloat)minValue
+                    maxValue:(CGFloat)maxValue{
     BKSliderView *customView = [[self alloc] init];
     customView.type = type;
     customView.title = title;
+    customView.thumbIcon = thumbIcon;
     customView.minValue = minValue;
     customView.maxValue = maxValue;
     
@@ -75,6 +80,29 @@
     [self updateValueLab];
 }
 
+/// 改变滑动条的样式
+/// @param type 样式类型
+/// @param minValue 最小值
+/// @param maxValue 最大值
+- (void)setStyleByType:(BKSliderType)type
+              minValue:(CGFloat)minValue
+              maxValue:(CGFloat)maxValue{
+    self.type = type;
+    self.minValue = minValue;
+    self.maxValue = maxValue;
+    
+    CGFloat defaultValue = minValue;
+    if (self.type == BKOneWaySlider) {
+        defaultValue = minValue;
+        self.centerLineView.hidden = YES;
+    } else if (self.type == BKTwoWaySlider){
+        defaultValue = minValue + (maxValue - minValue)/2.0;
+        self.centerLineView.hidden = NO;
+    }
+    
+    [self setValueOfSlider:defaultValue];
+}
+
 /// 加载交互视图
 - (void)loadUserInterface{
     //[左侧][标题]文本控件的对象
@@ -112,7 +140,7 @@
     
     //[手指拖动]图标控件的对象
     self.thumbImgView = [[UIImageView alloc] init];
-    [self.thumbImgView setImage:[UIImage imageNamed:@"BFFBSlider_Thumb"]];
+    [self.thumbImgView setImage:[UIImage imageNamed:self.thumbIcon]];
     self.thumbImgView.contentMode = UIViewContentModeCenter;
     self.thumbImgView.userInteractionEnabled = YES;
     //[拖动手势]的定义以及创建:
@@ -182,6 +210,8 @@
                 make.width.height.equalTo(self.mas_height).multipliedBy(0.8);
                 make.centerX.mas_equalTo(-self.emptyProgressView.width/2);
             }];
+            //单向滑动条需要默认隐藏[中间分割线标识]控件
+            self.centerLineView.hidden = YES;
         } else if (self.type == BKTwoWaySlider) {
             //[手指拖动]图标控件的布局
             [self.thumbImgView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -201,6 +231,8 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeSec * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^{
         /// 更新[数值文本控件]的对应数值
         [self updateValueLab];
+        /// 更新进度条的视图状态
+        [self updateFullProgress];
     });
 }
 
@@ -231,6 +263,20 @@
     [self updateFullProgress];
     /// 更新[数值文本控件]的对应数值
     [self updateValueLab];
+    
+    //对外提供滑动条在滑动[过程中]数值变化的方法
+    if ([self.mainDelegate respondsToSelector:@selector(sliderValueInChangeDelegateAction:)]) {
+        [self.mainDelegate sliderValueInChangeDelegateAction:self.value];
+    }
+    
+    if (sender.state == UIGestureRecognizerStateCancelled ||
+        sender.state == UIGestureRecognizerStateEnded ||
+        sender.state == UIGestureRecognizerStateFailed) {
+        //对外提供滑动条在滑动[结束后]数值变化的方法
+        if([self.mainDelegate respondsToSelector:@selector(sliderValueEndDelegateAction:)]){
+            [self.mainDelegate sliderValueEndDelegateAction:self.value];
+        }
+    }
 }
 
 /// 更新进度条的视图状态
@@ -270,12 +316,13 @@
             value = 0.0f;
         }
         self.rightValueLab.text = [NSString stringWithFormat:@"%.1lf", value];
-        return;
+    } else {
+        if ([[NSString stringWithFormat:@"%.0lf", value] isEqualToString:@"-0"]) {
+            value = 0.0f;
+        }
+        self.rightValueLab.text = [NSString stringWithFormat:@"%.0lf", value];
     }
-    if ([[NSString stringWithFormat:@"%.0lf", value] isEqualToString:@"-0"]) {
-        value = 0.0f;
-    }
-    self.rightValueLab.text = [NSString stringWithFormat:@"%.0lf", value];
+    self.value = value;
 }
 
 @end

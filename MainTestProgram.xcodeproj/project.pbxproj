@@ -175,8 +175,8 @@
 		D43F41BA25A5C37500200665 /* BKSliderView */ = {
 			isa = PBXGroup;
 			children = (
-				D43F41BB25A5C37500200665 /* BKSliderView.m */,
 				D43F41BC25A5C37500200665 /* BKSliderView.h */,
+				D43F41BB25A5C37500200665 /* BKSliderView.m */,
 			);
 			path = BKSliderView;
 			sourceTree = "<group>";
