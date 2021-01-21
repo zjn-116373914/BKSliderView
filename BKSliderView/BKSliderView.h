@@ -27,18 +27,12 @@ typedef NS_ENUM(NSInteger, BKSliderType) {
 /// 初始化对象
 /// @param type 滑动条类型
 /// @param title 滑动条控件的标题
-/// @param thumbIcon [滑动条图标]名称
 /// @param minValue 最小值
 /// @param maxValue 最大值
 + (instancetype)customByType:(BKSliderType)type
                        title:(NSString*)title
-                   thumbIcon:(NSString*)thumbIcon
                     minValue:(CGFloat)minValue
                     maxValue:(CGFloat)maxValue;
-/// 设置滑动条的数值
-/// @param value 数值
-- (void)setValueOfSlider:(CGFloat)value;
-
 /// 改变滑动条的样式
 /// @param type 样式类型
 /// @param minValue 最小值
@@ -47,6 +41,13 @@ typedef NS_ENUM(NSInteger, BKSliderType) {
               minValue:(CGFloat)minValue
               maxValue:(CGFloat)maxValue;
 
+/// 设置滑动条拖动图标
+/// @param imageName 图标名称
+-(void)setThumbIconByImageName:(NSString *)imageName;
+
+/// 设置滑动条的数值
+/// @param value 数值
+- (void)setValueOfSlider:(CGFloat)value;
 /// 滑动条样式类型
 @property(nonatomic, assign, readonly) BKSliderType type;
 /// [左侧][标题]文本控件

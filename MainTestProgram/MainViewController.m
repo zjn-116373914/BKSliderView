@@ -32,7 +32,8 @@
     self.backgroundImgView.userInteractionEnabled = YES;
     self.backgroundImgView.hidden = YES;
     
-    self.mainSlider = [BKSliderView customByType:BKOneWaySlider title:@"强度" thumbIcon:@"BFFBSlider_Thumb" minValue:0 maxValue:1.0];
+    self.mainSlider = [BKSliderView customByType:BKOneWaySlider title:@"强度" minValue:0 maxValue:100];
+    [self.mainSlider setThumbIconByImageName:@"BFFBSlider_Thumb"];
     [self.view addSubview:self.mainSlider];
     [self.mainSlider mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
@@ -75,7 +76,7 @@
 - (void)mainBtnAction{
     NSLog(@"核心按钮的点击事件!");
     
-    [self.mainSlider setStyleByType:BKTwoWaySlider minValue:-0.5 maxValue:0.5];
+    [self.mainSlider setStyleByType:BKTwoWaySlider minValue:-50 maxValue:50];
 }
 
 #pragma mark =========== 初始化控制器 end ===========
